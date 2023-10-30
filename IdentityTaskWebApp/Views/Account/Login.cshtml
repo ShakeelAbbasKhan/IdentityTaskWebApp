@@ -1,0 +1,53 @@
+﻿@model IdentityTaskWebApp.ViewModels.LoginViewModel
+
+<h2>Sign In</h2>
+<div class="row">
+    <div class="col-md-8">
+        <section id="loginForm">
+            <form id="account" method="post" asp-action="Login" asp-asp-controller="Account">
+                <h4>Use your registered email and password to login.</h4>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label class="col-md-2" asp-for="Email"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2" asp-for="Password"></label>
+                    <div class="col-md-10">
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-10 offset-md-2 my-2 checkbox">
+                        <label asp-for="RememberMe" class="pr-4 pl-10">
+                            <input asp-for="RememberMe" />
+                        </label>
+                        Remember Me?
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-10 offset-md-2 my-2">
+                        <input type="submit" value="Login In" class="btn btn-success" />
+                    </div>
+                </div>
+                <div class="col-md-10 offset-md-2">
+                    <a asp-action="Register">Sign Up</a>
+                </div>
+
+                <div>
+                    <a asp-action="ForgotPassword">Forgot Password?</a>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+  }

@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IdentityRole
+
+<h2>Delete Role</h2>
+
+<p>Are you sure you want to delete the role: <strong>@Model.Name</strong>?</p>
+
+@if (ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState[""].Errors)
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<form asp-controller="Role" asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-controller="Role" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
