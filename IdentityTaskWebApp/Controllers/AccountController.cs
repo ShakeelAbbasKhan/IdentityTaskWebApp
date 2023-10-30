@@ -71,7 +71,8 @@ namespace IdentityTaskWebApp.Controllers
         }
         //[Authorize(Roles = "Admin")]
 
-        [Authorize(Policy = "SuperUserRights")]
+        [Authorize(Policy = "SuperUserRights")]  // by policy
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
