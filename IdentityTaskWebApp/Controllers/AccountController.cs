@@ -41,7 +41,7 @@ namespace IdentityTaskWebApp.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByNameAsync(model.Email);
+                   // var user = await _userManager.FindByNameAsync(model.Email);
                     return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "Invalid Login Attempt");
@@ -111,7 +111,18 @@ namespace IdentityTaskWebApp.Controllers
 
         public IActionResult UserList()
         {
-            var users = _userManager.Users.ToList(); 
+            //var users = _userManager.Users.ToList(); 
+
+            //return View(users);
+
+            var users = _userManager.Users.Select(u => new UserListVM
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                Roles = _userManager.GetRolesAsync(u).Result.ToList()
+            }).ToList();
 
             return View(users);
         }
