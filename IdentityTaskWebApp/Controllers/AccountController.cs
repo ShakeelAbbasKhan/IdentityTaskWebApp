@@ -33,7 +33,7 @@ namespace IdentityTaskWebApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace IdentityTaskWebApp.Controllers
         [Authorize(Policy = "SuperUserRights")]  // by policy
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -197,6 +197,8 @@ namespace IdentityTaskWebApp.Controllers
 
                     var passwordResetLink = Url.Action("ResetPassword", "Account",
                             new { email = model.Email, token = token }, Request.Scheme);
+
+                    ViewBag.Url = passwordResetLink;
 
                     _logger.Log(LogLevel.Warning, passwordResetLink);
 
