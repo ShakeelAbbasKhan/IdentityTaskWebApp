@@ -17,7 +17,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 // policy for authorize
 
 builder.Services.AddAuthorization(options => {
-    options.AddPolicy("SuperUserRights", policy => policy.RequireRole("Admin", "Doctor"));
+    options.AddPolicy("SuperUserRights", policy => policy.RequireRole("Admin"));
 });
 
 
@@ -38,6 +38,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

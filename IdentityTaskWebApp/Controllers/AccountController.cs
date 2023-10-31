@@ -1,11 +1,9 @@
-﻿using IdentityTaskWebApp.Models;
-using IdentityTaskWebApp.ViewModels;
+﻿using IdentityTaskWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace IdentityTaskWebApp.Controllers
 {
@@ -13,9 +11,9 @@ namespace IdentityTaskWebApp.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        UserManager<ApplicationUser> _userManager;
-        SignInManager<ApplicationUser> _signInManager;
-        RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<AccountController> _logger;
 
 
@@ -103,8 +101,8 @@ namespace IdentityTaskWebApp.Controllers
             return View(model);
         }
 
-        [HttpPost]
 
+        [HttpPost]
         public async Task<IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
@@ -181,14 +179,12 @@ namespace IdentityTaskWebApp.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
@@ -214,7 +210,6 @@ namespace IdentityTaskWebApp.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult ResetPassword(string token, string email)
         {
             if (token == null || email == null)
@@ -225,7 +220,6 @@ namespace IdentityTaskWebApp.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
             if (ModelState.IsValid)

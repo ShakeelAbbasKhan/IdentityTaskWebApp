@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
-using System.Threading.Tasks;
-using IdentityTaskWebApp.Models;
 using IdentityTaskWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
-
+[Authorize(policy: "SuperUserRights")]
 public class RoleController : Controller
 {
     
@@ -32,11 +29,11 @@ public class RoleController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string roleName)
+    public async Task<IActionResult> Create(IdentityRole model)
     {
-        if (!string.IsNullOrEmpty(roleName))
+        if (!string.IsNullOrEmpty(model.Name))
         {
-            var role = new IdentityRole { Name = roleName };
+            var role = new IdentityRole { Name = model.Name };
             var result = await _roleManager.CreateAsync(role);
 
             if (result.Succeeded)
@@ -49,9 +46,9 @@ public class RoleController : Controller
                 ModelState.AddModelError("", error.Description);
             }
         }
-
-        return View();
+        return View(model);
     }
+
 
     [HttpGet]
     public async Task<IActionResult> Edit(string id)
