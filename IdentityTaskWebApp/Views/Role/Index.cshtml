@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@model List<IdentityRole>
+@* @model List<IdentityRole> *@
+@model List<IdentityTaskWebApp.ViewModels.RoleViewModel>
 
 <h2>Roles</h2>
 <p>
@@ -10,6 +11,7 @@
     <thead>
         <tr>
             <th>Role Name</th>
+            <th>Number of Users</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -17,7 +19,8 @@
         @foreach (var role in Model)
         {
             <tr>
-                <td>@role.Name</td>
+                <td>@role.RoleName</td>
+                <td>@role.AssignedRoleCount</td>
                 <td>
                     <a asp-controller="Role" asp-action="Edit" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
                     @if (User.IsInRole("Admin"))

@@ -23,9 +23,9 @@ namespace IdentityTaskWebApp.ViewModels
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "The Password & ConfirmPassword do not matach")]
         public string ConfirmPassword { get; set; }
-        [Required]
+  
         [Display(Name = "Role Name")]
-        public string RoleName { get; set; }
+        public string? RoleName { get; set; }
 
         public List<SelectListItem>? Roles { get; set; }
     }

@@ -72,34 +72,99 @@ namespace IdentityTaskWebApp.Controllers
         [Authorize(Policy = "SuperUserRights")]  // by policy
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> RegisterAsync(string? id, RegisterViewModel registerModel)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                if (string.IsNullOrEmpty(id))
                 {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, model.RoleName);
-                    
-                        await _signInManager.SignInAsync(user, isPersistent: false);   // if account has been created then we can automatically sign in to new user
- 
-                    return RedirectToAction("Index", "Home");
+                    var user = new ApplicationUser
+                    {
+                        UserName = registerModel.Email,
+                        Email = registerModel.Email,
+                        FirstName = registerModel.FirstName,
+                        LastName = registerModel.LastName,
+                    };
+
+                    var result = await _userManager.CreateAsync(user, registerModel.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, registerModel.RoleName);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
                 }
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError("", error.Description);
+
+                    var user = await _userManager.FindByIdAsync(id);
+
+                    if (user != null)
+                    {
+                        var passwordhash =   new PasswordHasher<ApplicationUser>();
+                        string hashedpassword = passwordhash.HashPassword(user, registerModel.Password); 
+
+                        user.UserName = registerModel.Email;
+                        user.Email = registerModel.Email;
+                        user.FirstName = registerModel.FirstName;
+                        user.LastName = registerModel.LastName;
+                        user.PasswordHash= hashedpassword;
+
+                        var result = await _userManager.UpdateAsync(user);
+
+                        if (result.Succeeded)
+                        {
+                            //await _userManager.AddToRoleAsync(user, registerModel.RoleName);
+                            //await _signInManager.SignInAsync(user, isPersistent: false);
+                            return RedirectToAction(nameof(UserList));
+                        }
+                        else
+                        {
+                            foreach (var error in result.Errors)
+                            {
+                                ModelState.AddModelError("", error.Description);
+                            }
+                        }
+                    }
+
                 }
+
+
             }
-            return View(model);
+            return View();
         }
+        // [ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Register(RegisterViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = new ApplicationUser
+        //        {
+        //            UserName = model.Email,
+        //            Email = model.Email,
+        //            FirstName = model.FirstName,
+        //            LastName = model.LastName
+        //        };
+        //        var result = await _userManager.CreateAsync(user, model.Password);
+        //        if (result.Succeeded)
+        //        {
+        //            await _userManager.AddToRoleAsync(user, model.RoleName);
+
+        //                await _signInManager.SignInAsync(user, isPersistent: false);   // if account has been created then we can automatically sign in to new user
+
+        //            return RedirectToAction("Index", "Home");
+        //        }
+        //        foreach (var error in result.Errors)
+        //        {
+        //            ModelState.AddModelError("", error.Description);
+        //        }
+        //    }
+        //    return View(model);
+        //}
 
 
         [HttpPost]
@@ -130,41 +195,49 @@ namespace IdentityTaskWebApp.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return RedirectToAction("UserList");
-            }
-            return View(user);
-        }
+            var user = _userManager.FindByIdAsync(id).Result;
 
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ApplicationUser model)
-        {
-            if (ModelState.IsValid)
+            if (user != null)
             {
-                var user = await _userManager.FindByIdAsync(model.Id);
-                if (user != null)
+                var resultuser = new UserEdit
                 {
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
-                    var result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("UserList");
-                    }
-
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                }
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email
+                };
+                return View(resultuser);
             }
-
-            return View(model); 
+            return RedirectToAction("Index");
         }
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(ApplicationUser model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = await _userManager.FindByIdAsync(model.Id);
+        //        if (user != null)
+        //        {
+        //            user.FirstName = model.FirstName;
+        //            user.LastName = model.LastName;
+        //            var result = await _userManager.UpdateAsync(user);
+        //            if (result.Succeeded)
+        //            {
+        //                return RedirectToAction("UserList");
+        //            }
+
+        //            foreach (var error in result.Errors)
+        //            {
+        //                ModelState.AddModelError("", error.Description);
+        //            }
+        //        }
+        //    }
+
+        //    return View(model); 
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

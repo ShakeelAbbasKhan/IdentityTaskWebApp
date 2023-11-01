@@ -1,20 +1,76 @@
-﻿@using IdentityTaskWebApp.ViewModels
-@model ApplicationUser
+﻿@model IdentityTaskWebApp.ViewModels.UserEdit
 
-<h2>Edit User</h2>
+<form id="account" method="post" asp-action="Register" asp-route-id="Id" asp-controller="Account">
+    <h2>Edit User Information</h2>
+    <br />
+    <div asp-validation-summary="All" class="text-danger"></div>
+            <input hidden asp-for="Id" class="form-control" />
+    <div class="form-group row">
+        <label class="col-md-2" asp-for="FirstName"></label>
+        <div class="col-md-6">
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2" asp-for="LastName"></label>
+        <div class="col-md-6">
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2" asp-for="Email"></label>
+        <div class="col-md-6">
+            <input asp-for="Email" class="form-control" readonly />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+   <div class="form-group row">
+        <label class="col-md-2" asp-for="Password"></label>
+        <div class="col-md-6">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-md-2" asp-for="ConfirmPassword"></label>
+        <div class="col-md-6">
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+    </div>
+@*    <div class="form-group row">
+        <label class="col-md-2" asp-for="RoleName"></label>
+       @* <div class="col-md-6">
+            <select asp-for="RoleName" asp-items="@CustomIdentity.Utilities.Helper.GetRoleforDropDown(User.IsInRole(CustomIdentity.Utilities.Helper.Admin))" class="form-control select2"></select>
+            <span asp-validation-for="RoleName" class="text-danger"></span>
+        </div>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <div class="form-group">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
+    </div>*@
+    @*<div class="form-group row">
+    <div class="col-md-10 offset-md-2 checkbox">
+    <label asp-for="RememberMe"></label>
+    <input asp-for="RememberMe" />
+    </div>
+    </div>*@
+    <br />
+    <div class="form-group row">
+        <div class="col-3 offset-2">
+            <input type="submit" value="Save" class="btn btn-success" />
+        </div>
+        @* @if (User.IsInRole(AppointmentScheduler.Utilities.Helper.Admin))
+        {
+        <div class="col-3 offset-2">
+        <a asp-controller="Appointment" asp-action="Index" style="margin-left: -220px;" class="btn btn-primary text-center text-decoration-none form-control">Back to Dashboard</a>
+        </div>
+        }*@
     </div>
 
-    <div class="form-group">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Update</button>
 </form>
+
+@section Scripts{
+    @{
+        <partial name="_validationscriptspartial" />
+    }
+}

@@ -16,10 +16,25 @@ public class RoleController : Controller
         _userManager = userManager;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
+
         var roles = _roleManager.Roles.ToList();
-        return View(roles);
+        var roleViewModels = new List<RoleViewModel>();
+
+        foreach (var role in roles)
+        {
+            var roleViewModel = new RoleViewModel
+            {
+                Id = role.Id,
+                RoleName = role.Name,
+                AssignedRoleCount = (await _userManager.GetUsersInRoleAsync(role.Name)).Count
+            };
+
+            roleViewModels.Add(roleViewModel);
+        }
+
+        return View(roleViewModels);
     }
 
     [HttpGet]
@@ -112,59 +127,59 @@ public class RoleController : Controller
         return View(role);
     }
 
-    public async Task<IActionResult> ManageUserRole(string id)
+
+    public async Task<IActionResult> AssignRoles(string userId)
     {
-        ViewBag.userId = id;
-        var user = await _userManager.FindByIdAsync(id);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
-            ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-            return View("NotFound");
+            return NotFound();
         }
-        ViewBag.UserName = user.UserName;
-        var model = new List<ManageUserRolesViewModel>();
-        foreach (var role in _roleManager.Roles)
+        var allRoles = _roleManager.Roles.ToList();
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        var model = new AssignRolesViewModel
         {
-            var userRolesViewModel = new ManageUserRolesViewModel
+            UserId = user.Id,
+            UserEmail = user.Email,
+            Roles = allRoles.Select(role => new UserRoleViewModel
             {
                 RoleId = role.Id,
-                RoleName = role.Name
-            };
-            if (await _userManager.IsInRoleAsync(user, role.Name))
-            {
-                userRolesViewModel.Selected = true;
-            }
-            else
-            {
-                userRolesViewModel.Selected = false;
-            }
-            model.Add(userRolesViewModel);
-        }
+                RoleName = role.Name,
+                IsSelected = userRoles.Contains(role.Name)
+            }).ToList()
+        };
+
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ManageUserRole(List<ManageUserRolesViewModel> model, string id)
+    public async Task<IActionResult> AssignRoles(AssignRolesViewModel model)
     {
-        var user = await _userManager.FindByIdAsync(id);
+        var user = await _userManager.FindByIdAsync(model.UserId);
         if (user == null)
         {
-            return View();
+            return NotFound();
         }
-        var roles = await _userManager.GetRolesAsync(user);
-        var result = await _userManager.RemoveFromRolesAsync(user, roles);
-        if (!result.Succeeded)
+
+        var selectedRoles = model.Roles.Where(r => r.IsSelected).Select(r => r.RoleName).ToList();
+        var userRoles = await _userManager.GetRolesAsync(user);
+        await _userManager.RemoveFromRolesAsync(user, userRoles);
+
+        var result = await _userManager.AddToRolesAsync(user, selectedRoles);
+
+        if (result.Succeeded)
         {
-            ModelState.AddModelError("", "Cannot remove user existing roles");
-            return View(model);
+            return RedirectToAction("UserList","Account");
         }
-        result = await _userManager.AddToRolesAsync(user, model.Where(x => x.Selected).Select(y => y.RoleName));
-        if (!result.Succeeded)
+
+        foreach (var error in result.Errors)
         {
-            ModelState.AddModelError("", "Cannot add selected roles to user");
-            return View(model);
+            ModelState.AddModelError(string.Empty, error.Description);
         }
-        return RedirectToAction("UserList", "Account");
+
+        return View(model);
     }
+
 
 }

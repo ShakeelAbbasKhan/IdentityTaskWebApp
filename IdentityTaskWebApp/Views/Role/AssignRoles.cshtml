@@ -1,0 +1,51 @@
+﻿@* @model IdentityTaskWebApp.ViewModels.AssignRolesViewModel
+
+<form asp-action="AssignRoles">
+    <h2>Assign Roles for @Model.UserEmail</h2>
+
+    <input type="hidden" asp-for="UserId" />
+
+    @for (int i = 0; i < Model.Roles.Count; i++)
+    {
+        <div class="form-check">
+            <input asp-for="Roles[i].IsSelected" />
+            <label asp-for="Roles[i].IsSelected">@Model.Roles[i].RoleName</label>
+            <input type="hidden" asp-for="Roles[i].RoleName" />
+            <input type="hidden" asp-for="Roles[i].RoleId" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form> *@
+
+
+@model IdentityTaskWebApp.ViewModels.AssignRolesViewModel
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="text-center">Assign Roles for @Model.UserEmail</h2>
+            <form asp-action="AssignRoles" method="post">
+                <input type="hidden" asp-for="UserId" />
+                <div class="list-group">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="list-group-item">
+                            <div class="form-check">
+                                <input asp-for="Roles[i].IsSelected" class="form-check-input" />
+                                <label asp-for="Roles[i].IsSelected" class="form-check-label">@Model.Roles[i].RoleName</label>
+                            </div>
+                            <input type="hidden" asp-for="Roles[i].RoleName" />
+                            <input type="hidden" asp-for="Roles[i].RoleId" />
+                        </div>
+                    }
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
